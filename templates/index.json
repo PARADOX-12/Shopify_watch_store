@@ -188,6 +188,9 @@
         "slide_gCQDbW",
         "slide_UVHxEy"
       ],
+      "custom_css": [
+        "@media screen and (min-width: 750px) {.banner, slideshow-component {display: none; }}"
+      ],
       "name": "t:sections.slideshow.presets.name",
       "settings": {
         "layout": "full_bleed",
