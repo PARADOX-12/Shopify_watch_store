@@ -1,0 +1,35 @@
+# Node modules and dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Shopify CLI / Theme Kit files
+.shopify-cli.yml
+.config.yml
+
+# Build outputs (if using build tools like Tailwind, Webpack, etc.)
+dist/
+build/
+.cache/
+*.map
+
+# Lock files (optional)
+package-lock.json
+yarn.lock
+
+# Logs
+*.log
+logs/
