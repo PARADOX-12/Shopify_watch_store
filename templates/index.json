@@ -91,6 +91,9 @@
         "slide_j73Kjn",
         "slide_nqhYBX"
       ],
+      "custom_css": [
+        "@media screen and (max-width: 750px) {.banner, slideshow-component {display: none; }}"
+      ],
       "name": "t:sections.slideshow.presets.name",
       "settings": {
         "layout": "full_bleed",
