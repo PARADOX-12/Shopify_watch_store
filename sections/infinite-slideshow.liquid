@@ -61,10 +61,12 @@
   }
 </style>
 
-<section class="infinite-slideshow" id="Slideshow-{{ section.id }}"
+<section
+  class="infinite-slideshow"
+  id="Slideshow-{{ section.id }}"
   data-autoplay="{{ section.settings.auto_rotate }}"
-  data-speed="{{ section.settings.change_slides_speed }}">
-  
+  data-speed="{{ section.settings.change_slides_speed }}"
+>
   <!-- Buttons -->
   <button type="button" class="infinite-slideshow__button infinite-slideshow__button--prev" aria-label="Previous slide">
     &#10094;
@@ -82,10 +84,11 @@
             <source srcset="{{ block.settings.image_mobile | image_url: width: 800 }}" media="(max-width: 749px)">
           {% endif %}
           {% if block.settings.image_desktop %}
-            <img
-              src="{{ block.settings.image_desktop | image_url: width: 1600 }}"
-              alt="{{ block.settings.alt_text | escape }}"
-              class="infinite-slideshow__image">
+            {{
+              block.settings.image_desktop
+              | image_url: width: 1600
+              | image_tag: alt: block.settings.alt_text, class: 'infinite-slideshow__image', loading: 'lazy'
+            }}
           {% else %}
             {{ 'hero-apparel-1' | placeholder_svg_tag }}
           {% endif %}
@@ -96,12 +99,12 @@
 </section>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const root = document.getElementById("Slideshow-{{ section.id }}");
-    const track = root.querySelector(".infinite-slideshow__track");
+  document.addEventListener('DOMContentLoaded', function () {
+    const root = document.getElementById('Slideshow-{{ section.id }}');
+    const track = root.querySelector('.infinite-slideshow__track');
     const slides = Array.from(track.children);
-    const prev = root.querySelector(".infinite-slideshow__button--prev");
-    const next = root.querySelector(".infinite-slideshow__button--next");
+    const prev = root.querySelector('.infinite-slideshow__button--prev');
+    const next = root.querySelector('.infinite-slideshow__button--next');
 
     let index = 0;
     let slideWidth = 0;
@@ -114,19 +117,19 @@
 
     function goTo(newIndex) {
       index = (newIndex + slides.length) % slides.length; // circular logic
-      track.style.transition = "transform 0.6s ease";
+      track.style.transition = 'transform 0.6s ease';
       track.style.transform = `translateX(${-index * slideWidth}px)`;
     }
 
-    prev.addEventListener("click", () => goTo(index - 1));
-    next.addEventListener("click", () => goTo(index + 1));
+    prev.addEventListener('click', () => goTo(index - 1));
+    next.addEventListener('click', () => goTo(index + 1));
 
-    window.addEventListener("resize", measure);
+    window.addEventListener('resize', measure);
     measure();
 
     // Auto-slide
-    const autoplay = root.dataset.autoplay === "true";
-    const speed = parseInt(root.dataset.speed || "5", 10) * 1000;
+    const autoplay = root.dataset.autoplay === 'true';
+    const speed = parseInt(root.dataset.speed || '5', 10) * 1000;
 
     function startAutoplay() {
       if (!autoplay) return;
@@ -134,8 +137,8 @@
       autoplayTimer = setInterval(() => goTo(index + 1), speed);
     }
 
-    root.addEventListener("mouseenter", () => clearInterval(autoplayTimer));
-    root.addEventListener("mouseleave", startAutoplay);
+    root.addEventListener('mouseenter', () => clearInterval(autoplayTimer));
+    root.addEventListener('mouseleave', startAutoplay);
 
     startAutoplay();
   });
@@ -190,11 +193,7 @@
   "presets": [
     {
       "name": "Infinite Slideshow",
-      "blocks": [
-        { "type": "slide" },
-        { "type": "slide" },
-        { "type": "slide" }
-      ]
+      "blocks": [{ "type": "slide" }, { "type": "slide" }, { "type": "slide" }]
     }
   ]
 }
