@@ -1,148 +1,167 @@
-{{ "component-infinite-slider.css" | asset_url | stylesheet_tag }}
+{% comment %}
+  Infinite Slideshow Section
+  - Infinite loop with left/right arrows centered vertically
+  - Supports desktop + mobile images
+  - Responsive, auto-slide toggle in settings
+{% endcomment %}
 
-<div class="infinite-slideshow-wrapper">
-  <slider-component class="slider-mobile-gutter{% if section.settings.auto_slide %} auto-slide{% endif %}" 
-                    data-auto-slide="{{ section.settings.auto_slide }}"
-                    data-slide-speed="{{ section.settings.slide_speed }}">
-    <div class="slideshow" id="Slider-{{ section.id }}" role="region" aria-label="Slideshow">
-      <div class="slideshow__slides">
-        {% for block in section.blocks %}
-          <div id="Slide-{{ section.id }}-{{ forloop.index }}" 
-               class="slideshow__slide" 
-               {{ block.shopify_attributes }}
-               role="group" 
-               aria-label="Slide {{ forloop.index }} of {{ section.blocks.size }}">
-            
-            {%- if block.settings.link -%}
-              <a href="{{ block.settings.link }}" class="slideshow__slide-link">
-            {%- endif -%}
-            
-            {%- if block.settings.desktop_image != blank or block.settings.mobile_image != blank -%}
-              <div class="slideshow__media">
-                {%- if block.settings.desktop_image != blank -%}
-                  {{ block.settings.desktop_image | image_url: width: 2000 | image_tag: 
-                     loading: 'lazy',
-                     class: 'slideshow__image desktop-only',
-                     widths: '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840',
-                     sizes: '100vw'
-                  }}
-                {%- endif -%}
-                
-                {%- if block.settings.mobile_image != blank -%}
-                  {{ block.settings.mobile_image | image_url: width: 750 | image_tag: 
-                     loading: 'lazy',
-                     class: 'slideshow__image mobile-only',
-                     widths: '375, 550, 750',
-                     sizes: '100vw'
-                  }}
-                {%- elsif block.settings.desktop_image != blank -%}
-                  {%- comment -%} Fallback to desktop image if no mobile image {%- endcomment -%}
-                  {{ block.settings.desktop_image | image_url: width: 750 | image_tag: 
-                     loading: 'lazy',
-                     class: 'slideshow__image mobile-only',
-                     widths: '375, 550, 750',
-                     sizes: '100vw'
-                  }}
-                {%- endif -%}
-              </div>
-            {%- endif -%}
-            
-            {%- if block.settings.link -%}
-              </a>
-            {%- endif -%}
-          </div>
-        {% endfor %}
-        
-        {%- comment -%} Clone slides for seamless infinite loop {%- endcomment -%}
-        {% for block in section.blocks %}
-          <div class="slideshow__slide slideshow__slide--clone" aria-hidden="true">
-            {%- if block.settings.link -%}
-              <a href="{{ block.settings.link }}" class="slideshow__slide-link" tabindex="-1">
-            {%- endif -%}
-            
-            {%- if block.settings.desktop_image != blank or block.settings.mobile_image != blank -%}
-              <div class="slideshow__media">
-                {%- if block.settings.desktop_image != blank -%}
-                  {{ block.settings.desktop_image | image_url: width: 2000 | image_tag: 
-                     loading: 'lazy',
-                     class: 'slideshow__image desktop-only',
-                     widths: '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840',
-                     sizes: '100vw'
-                  }}
-                {%- endif -%}
-                
-                {%- if block.settings.mobile_image != blank -%}
-                  {{ block.settings.mobile_image | image_url: width: 750 | image_tag: 
-                     loading: 'lazy',
-                     class: 'slideshow__image mobile-only',
-                     widths: '375, 550, 750',
-                     sizes: '100vw'
-                  }}
-                {%- elsif block.settings.desktop_image != blank -%}
-                  {{ block.settings.desktop_image | image_url: width: 750 | image_tag: 
-                     loading: 'lazy',
-                     class: 'slideshow__image mobile-only',
-                     widths: '375, 550, 750',
-                     sizes: '100vw'
-                  }}
-                {%- endif -%}
-              </div>
-            {%- endif -%}
-            
-            {%- if block.settings.link -%}
-              </a>
-            {%- endif -%}
-          </div>
-        {% endfor %}
+<style>
+  .infinite-slideshow {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .infinite-slideshow__track {
+    display: flex;
+    transition: transform 0.6s ease;
+    will-change: transform;
+  }
+
+  .infinite-slideshow__slide {
+    flex: 0 0 100%;
+    position: relative;
+  }
+
+  .infinite-slideshow__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .infinite-slideshow__button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 48px;
+    cursor: pointer;
+    z-index: 10;
+    padding: 5px 12px;
+    user-select: none;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  }
+
+  .infinite-slideshow__button--prev {
+    left: 10px;
+  }
+  .infinite-slideshow__button--next {
+    right: 10px;
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 749px) {
+    .infinite-slideshow__button {
+      font-size: 32px;
+      padding: 4px 8px;
+    }
+  }
+</style>
+
+<section class="infinite-slideshow" id="Slideshow-{{ section.id }}"
+  data-autoplay="{{ section.settings.auto_rotate }}"
+  data-speed="{{ section.settings.change_slides_speed }}">
+  
+  <!-- Buttons -->
+  <button type="button" class="infinite-slideshow__button infinite-slideshow__button--prev" aria-label="Previous slide">
+    &#10094;
+  </button>
+  <button type="button" class="infinite-slideshow__button infinite-slideshow__button--next" aria-label="Next slide">
+    &#10095;
+  </button>
+
+  <!-- Slides -->
+  <div class="infinite-slideshow__track" id="Slider-{{ section.id }}">
+    {% for block in section.blocks %}
+      <div class="infinite-slideshow__slide" id="Slide-{{ section.id }}-{{ forloop.index }}">
+        <picture>
+          {% if block.settings.image_mobile %}
+            <source srcset="{{ block.settings.image_mobile | image_url: width: 800 }}" media="(max-width: 749px)">
+          {% endif %}
+          {% if block.settings.image_desktop %}
+            <img
+              src="{{ block.settings.image_desktop | image_url: width: 1600 }}"
+              alt="{{ block.settings.alt_text | escape }}"
+              class="infinite-slideshow__image">
+          {% else %}
+            {{ 'hero-apparel-1' | placeholder_svg_tag }}
+          {% endif %}
+        </picture>
       </div>
-    </div>
-    
-    <div class="slideshow__controls">
-      <button type="button" 
-              class="slideshow__arrow slideshow__arrow--prev" 
-              name="previous" 
-              aria-label="Previous slide">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      
-      <button type="button" 
-              class="slideshow__arrow slideshow__arrow--next" 
-              name="next" 
-              aria-label="Next slide">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-    </div>
-  </slider-component>
-</div>
+    {% endfor %}
+  </div>
+</section>
 
-<script src="{{ 'infinite-slider.js' | asset_url }}" defer="defer"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const root = document.getElementById("Slideshow-{{ section.id }}");
+    const track = root.querySelector(".infinite-slideshow__track");
+    const slides = Array.from(track.children);
+    const prev = root.querySelector(".infinite-slideshow__button--prev");
+    const next = root.querySelector(".infinite-slideshow__button--next");
+
+    let index = 0;
+    let slideWidth = 0;
+    let autoplayTimer = null;
+
+    function measure() {
+      slideWidth = slides[0].getBoundingClientRect().width;
+      track.style.transform = `translateX(${-index * slideWidth}px)`;
+    }
+
+    function goTo(newIndex) {
+      index = (newIndex + slides.length) % slides.length; // circular logic
+      track.style.transition = "transform 0.6s ease";
+      track.style.transform = `translateX(${-index * slideWidth}px)`;
+    }
+
+    prev.addEventListener("click", () => goTo(index - 1));
+    next.addEventListener("click", () => goTo(index + 1));
+
+    window.addEventListener("resize", measure);
+    measure();
+
+    // Auto-slide
+    const autoplay = root.dataset.autoplay === "true";
+    const speed = parseInt(root.dataset.speed || "5", 10) * 1000;
+
+    function startAutoplay() {
+      if (!autoplay) return;
+      clearInterval(autoplayTimer);
+      autoplayTimer = setInterval(() => goTo(index + 1), speed);
+    }
+
+    root.addEventListener("mouseenter", () => clearInterval(autoplayTimer));
+    root.addEventListener("mouseleave", startAutoplay);
+
+    startAutoplay();
+  });
+</script>
 
 {% schema %}
 {
   "name": "Infinite Slideshow",
   "tag": "section",
-  "class": "section-infinite-slideshow",
+  "class": "section",
   "settings": [
     {
       "type": "checkbox",
-      "id": "auto_slide",
-      "label": "Enable auto-sliding",
+      "id": "auto_rotate",
+      "label": "Enable auto-slide",
       "default": true
     },
     {
       "type": "range",
-      "id": "slide_speed",
+      "id": "change_slides_speed",
       "min": 3,
       "max": 10,
       "step": 1,
       "unit": "s",
-      "label": "Slide speed",
-      "default": 5,
-      "info": "Time between automatic slide transitions"
+      "label": "Slide change interval",
+      "default": 5
     }
   ],
   "blocks": [
@@ -152,19 +171,18 @@
       "settings": [
         {
           "type": "image_picker",
-          "id": "desktop_image",
-          "label": "Desktop Image"
+          "id": "image_desktop",
+          "label": "Desktop image"
         },
         {
           "type": "image_picker",
-          "id": "mobile_image",
-          "label": "Mobile Image",
-          "info": "Optional. If not set, desktop image will be used."
+          "id": "image_mobile",
+          "label": "Mobile image (optional)"
         },
         {
-          "type": "url",
-          "id": "link",
-          "label": "Slide Link"
+          "type": "text",
+          "id": "alt_text",
+          "label": "Alt text"
         }
       ]
     }
@@ -173,15 +191,9 @@
     {
       "name": "Infinite Slideshow",
       "blocks": [
-        {
-          "type": "slide"
-        },
-        {
-          "type": "slide"
-        },
-        {
-          "type": "slide"
-        }
+        { "type": "slide" },
+        { "type": "slide" },
+        { "type": "slide" }
       ]
     }
   ]
