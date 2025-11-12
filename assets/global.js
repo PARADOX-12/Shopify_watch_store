@@ -788,12 +788,22 @@ class SliderComponent extends HTMLElement {
     }
 
     if (this.enableSliderLooping) return;
-
-    if (this.isSlideVisible(this.sliderItemsToShow[0]) && this.slider.scrollLeft === 0) {
-      this.prevButton.setAttribute('disabled', 'disabled');
-    } else {
-      this.prevButton.removeAttribute('disabled');
-    }
+    
+if (this.isSlideVisible(this.sliderItemsToShow[0]) && this.slider.scrollLeft === 0) {
+  // Instead of disabling, wrap to last page using modulo
+  const lastPageIndex = this.totalPages - 1;
+  const newPosition = lastPageIndex * this.sliderItemOffset;
+  
+  this.slider.scrollTo({
+    left: newPosition,
+    behavior: "smooth",
+  });
+  
+  // Update current page to last page
+  this.currentPage = this.totalPages;
+} else {
+  this.prevButton.removeAttribute('disabled');
+}
 
     if (this.isSlideVisible(this.sliderItemsToShow[this.sliderItemsToShow.length - 1])) {
       this.nextButton.setAttribute('disabled', 'disabled');
