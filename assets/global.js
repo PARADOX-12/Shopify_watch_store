@@ -755,42 +755,10 @@ class SliderComponent extends HTMLElement {
     );
     if (this.sliderItemsToShow.length < 2) return;
 
-    // Clone first and last slides for seamless loop
-    if (this.enableSliderLooping && !this.clonesCreated) {
-      this.createClones();
-    }
-
     this.sliderItemOffset =
       this.sliderItemsToShow[1].offsetLeft - this.sliderItemsToShow[0].offsetLeft;
     this.totalPages = this.sliderItemsToShow.length;
-    
-    // Start at the first real slide (after the cloned last slide)
-    if (this.enableSliderLooping && !this.initialPositionSet) {
-      this.slider.scrollLeft = this.sliderItemOffset;
-      this.initialPositionSet = true;
-    }
-    
     this.update();
-  }
-
-  createClones() {
-    // Clone first slide and append to end
-    const firstSlideClone = this.sliderItemsToShow[0].cloneNode(true);
-    firstSlideClone.setAttribute('aria-hidden', 'true');
-    this.slider.appendChild(firstSlideClone);
-
-    // Clone last slide and prepend to beginning
-    const lastSlideClone = this.sliderItemsToShow[this.sliderItemsToShow.length - 1].cloneNode(true);
-    lastSlideClone.setAttribute('aria-hidden', 'true');
-    this.slider.insertBefore(lastSlideClone, this.sliderItemsToShow[0]);
-
-    // Update the items array to include clones
-    this.sliderItems = this.slider.querySelectorAll('[id^="Slide-"]');
-    this.sliderItemsToShow = Array.from(this.sliderItems).filter(
-      (el) => el.clientWidth > 0
-    );
-    
-    this.clonesCreated = true;
   }
 
   update() {
@@ -800,32 +768,14 @@ class SliderComponent extends HTMLElement {
     this.currentPage =
       Math.round(this.slider.scrollLeft / this.sliderItemOffset) + 1;
 
-    // Adjust for cloned slides
-    if (this.enableSliderLooping && this.clonesCreated) {
-      const actualTotalPages = this.totalPages - 2; // Exclude clones
-      
-      // Update UI counter (show actual page numbers, not clones)
-      let displayPage = this.currentPage - 1; // Offset for prepended clone
-      if (displayPage < 1) displayPage = actualTotalPages;
-      if (displayPage > actualTotalPages) displayPage = 1;
-      
-      if (this.currentPageElement && this.pageTotalElement) {
-        this.currentPageElement.textContent = displayPage;
-        this.pageTotalElement.textContent = actualTotalPages;
-      }
+    if (this.currentPage < 1) this.currentPage = 1;
+    if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
 
-      // Keep buttons always enabled
-      this.prevButton.removeAttribute("disabled");
-      this.nextButton.removeAttribute("disabled");
-    } else {
-      // Non-looping mode counter
-      if (this.currentPageElement && this.pageTotalElement) {
-        this.currentPageElement.textContent = this.currentPage;
-        this.pageTotalElement.textContent = this.totalPages;
-      }
+    if (this.currentPageElement && this.pageTotalElement) {
+      this.currentPageElement.textContent = this.currentPage;
+      this.pageTotalElement.textContent = this.totalPages;
     }
 
-    // Notify when slide changes
     if (this.currentPage !== prevPage) {
       this.dispatchEvent(
         new CustomEvent("slideChanged", {
@@ -836,47 +786,37 @@ class SliderComponent extends HTMLElement {
         })
       );
     }
+
+    // Keep buttons enabled in loop mode
+    if (this.enableSliderLooping) {
+      this.prevButton.removeAttribute("disabled");
+      this.nextButton.removeAttribute("disabled");
+    }
   }
 
   onButtonClick(event) {
     event.preventDefault();
+    
+    if (!this.enableSliderLooping) return;
+    
     const direction = event.currentTarget.name === "next" ? 1 : -1;
     
-    if (this.enableSliderLooping && this.clonesCreated) {
-      const newPosition = this.slider.scrollLeft + (direction * this.sliderItemOffset);
-      
-      this.slider.scrollTo({
-        left: newPosition,
-        behavior: "smooth",
-      });
-
-      // Check if we need to reset position after animation
-      setTimeout(() => this.checkAndResetPosition(), 500);
-    } else {
-      // Non-looping mode
-      const nextPage = Math.max(1, Math.min(this.totalPages, this.currentPage + direction));
-      const newPosition = (nextPage - 1) * this.sliderItemOffset;
-      
-      this.slider.scrollTo({
-        left: newPosition,
-        behavior: "smooth",
-      });
-    }
-  }
-
-  checkAndResetPosition() {
-    const scrollPos = this.slider.scrollLeft;
-    const actualTotalPages = this.totalPages - 2; // Exclude clones
+    // Calculate next page using modulo for circular wrapping
+    // Subtract 1 to convert to 0-indexed, add totalPages before modulo to handle negatives
+    const nextPageIndex = ((this.currentPage - 1 + direction) + this.totalPages) % this.totalPages;
+    const nextPage = nextPageIndex + 1; // Convert back to 1-indexed
     
-    // If we scrolled to the cloned first slide (at the end)
-    if (scrollPos >= (this.totalPages - 1) * this.sliderItemOffset) {
-      this.slider.scrollLeft = this.sliderItemOffset; // Jump to real first slide
-    }
+    // Calculate scroll position
+    const newPosition = nextPageIndex * this.sliderItemOffset;
     
-    // If we scrolled to the cloned last slide (at the beginning)
-    if (scrollPos <= 0) {
-      this.slider.scrollLeft = actualTotalPages * this.sliderItemOffset; // Jump to real last slide
-    }
+    // Scroll to new position
+    this.slider.scrollTo({
+      left: newPosition,
+      behavior: "smooth",
+    });
+    
+    // Update current page
+    this.currentPage = nextPage;
   }
 
   setSlidePosition(position) {
