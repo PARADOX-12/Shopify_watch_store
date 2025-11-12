@@ -740,6 +740,11 @@ class SliderComponent extends HTMLElement {
 
     this.currentPage = 1;
     this.initPages();
+    
+    // Set up infinite sliding
+    if (this.enableSliderLooping) {
+      this.setupInfiniteSliding();
+    }
 
     const resizeObserver = new ResizeObserver(() => this.initPages());
     resizeObserver.observe(this.slider);
@@ -747,6 +752,38 @@ class SliderComponent extends HTMLElement {
     this.slider.addEventListener("scroll", this.update.bind(this));
     this.prevButton.addEventListener("click", this.onButtonClick.bind(this));
     this.nextButton.addEventListener("click", this.onButtonClick.bind(this));
+  }
+
+  setupInfiniteSliding() {
+    // Clone all slides and append them to create seamless loop
+    const slidesHTML = this.slider.innerHTML;
+    this.slider.innerHTML += slidesHTML; // Duplicate all slides
+    
+    // Add CSS for infinite animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes infiniteSlide {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-50%);
+        }
+      }
+      
+      .slider--infinite {
+        display: flex;
+        animation: infiniteSlide 20s linear infinite;
+      }
+      
+      .slider--infinite:hover {
+        animation-play-state: paused;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Apply animation class
+    this.slider.classList.add('slider--infinite');
   }
 
   initPages() {
@@ -773,7 +810,7 @@ class SliderComponent extends HTMLElement {
 
     if (this.currentPageElement && this.pageTotalElement) {
       this.currentPageElement.textContent = this.currentPage;
-      this.pageTotalElement.textContent = this.totalPages;
+      this.pageTotalElement.textContent = Math.floor(this.totalPages / 2); // Real count
     }
 
     if (this.currentPage !== prevPage) {
@@ -787,7 +824,6 @@ class SliderComponent extends HTMLElement {
       );
     }
 
-    // Keep buttons enabled in loop mode
     if (this.enableSliderLooping) {
       this.prevButton.removeAttribute("disabled");
       this.nextButton.removeAttribute("disabled");
@@ -797,26 +833,24 @@ class SliderComponent extends HTMLElement {
   onButtonClick(event) {
     event.preventDefault();
     
-    if (!this.enableSliderLooping) return;
-    
+    // Pause animation on manual control
+    if (this.enableSliderLooping) {
+      this.slider.style.animationPlayState = 'paused';
+      
+      // Resume after 3 seconds
+      clearTimeout(this.resumeTimer);
+      this.resumeTimer = setTimeout(() => {
+        this.slider.style.animationPlayState = 'running';
+      }, 3000);
+    }
+
     const direction = event.currentTarget.name === "next" ? 1 : -1;
+    const newPosition = this.slider.scrollLeft + (direction * this.sliderItemOffset);
     
-    // Calculate next page using modulo for circular wrapping
-    // Subtract 1 to convert to 0-indexed, add totalPages before modulo to handle negatives
-    const nextPageIndex = ((this.currentPage - 1 + direction) + this.totalPages) % this.totalPages;
-    const nextPage = nextPageIndex + 1; // Convert back to 1-indexed
-    
-    // Calculate scroll position
-    const newPosition = nextPageIndex * this.sliderItemOffset;
-    
-    // Scroll to new position
     this.slider.scrollTo({
       left: newPosition,
       behavior: "smooth",
     });
-    
-    // Update current page
-    this.currentPage = nextPage;
   }
 
   setSlidePosition(position) {
