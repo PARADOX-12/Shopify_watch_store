@@ -78,10 +78,68 @@
         "padding_top": 44,
         "padding_bottom": 36
       }
+    },
+    "features_and_benefits_jkd6me": {
+      "type": "Features-and-Benefits",
+      "blocks": {
+        "icon_item_3axK4M": {
+          "type": "icon_item",
+          "settings": {
+            "icon_type": "image",
+            "icon_image": "shopify://shop_images/wrist-watch_1.webp",
+            "custom_svg": "",
+            "content": "Shop from over 3000+ styles"
+          }
+        },
+        "icon_item_Fb8VBg": {
+          "type": "icon_item",
+          "settings": {
+            "icon_type": "image",
+            "custom_svg": "",
+            "content": "No Cost EMI above 7k"
+          }
+        },
+        "icon_item_gRMcnb": {
+          "type": "icon_item",
+          "settings": {
+            "icon_type": "image",
+            "custom_svg": "",
+            "content": "COD available upto 25k"
+          }
+        },
+        "icon_item_gVMDqj": {
+          "type": "icon_item",
+          "settings": {
+            "icon_type": "image",
+            "custom_svg": "",
+            "content": "10% off on 1st purchase - WELCOME10"
+          }
+        },
+        "icon_item_TFDad9": {
+          "type": "icon_item",
+          "settings": {
+            "icon_type": "image",
+            "custom_svg": "",
+            "content": "Ship in 24 hours"
+          }
+        }
+      },
+      "block_order": [
+        "icon_item_3axK4M",
+        "icon_item_Fb8VBg",
+        "icon_item_gRMcnb",
+        "icon_item_gVMDqj",
+        "icon_item_TFDad9"
+      ],
+      "name": "Features & Benefits",
+      "settings": {
+        "background_color": "#000000"
+      }
     }
   },
   "order": [
     "infinite_slideshow_an7nD8",
-    "featured_collection"
+    "featured_collection",
+    "features_and_benefits_jkd6me"
   ]
 }
