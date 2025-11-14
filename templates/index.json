@@ -15,8 +15,8 @@
         "slide_RwcDjC": {
           "type": "slide",
           "settings": {
-            "image_desktop": "shopify://shop_images/1920x_667_2.webp",
-            "image_mobile": "shopify://shop_images/1200x1500px_copy_1.webp",
+            "image_desktop": "shopify://shop_images/3rd.1920_x_667px_9.jpg",
+            "image_mobile": "shopify://shop_images/3rd.640_x_820px_9.jpg",
             "alt_text": "",
             "slide_link": ""
           }
@@ -34,7 +34,7 @@
           "type": "slide",
           "settings": {
             "image_desktop": "shopify://shop_images/1920_x_667px_9_1.webp",
-            "image_mobile": "shopify://shop_images/3rd.640_x_820px_9.jpg",
+            "image_mobile": "shopify://shop_images/1200x1500px_copy_1.webp",
             "alt_text": "",
             "slide_link": ""
           }
