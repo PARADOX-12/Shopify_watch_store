@@ -113,74 +113,59 @@ Infinite Slideshow Section — fully working
   </div>
 </section>
 
-{% javascript %}
-  document.addEventListener("DOMContentLoaded", function () {
-    function initSlideshow(root) {
-      if (!root) return;
-      
-      const track = root.querySelector(".infinite-slideshow__track");
-      const slides = Array.from(track.children);
-      if (slides.length === 0) return;
-      
-      const prev = root.querySelector(".infinite-slideshow__button--prev");
-      const next = root.querySelector(".infinite-slideshow__button--next");
-      
-      let index = 0;
-      let slideWidth = slides[0].getBoundingClientRect().width;
-      
-      function goTo(newIndex) {
-        index = (newIndex + slides.length) % slides.length;
-        track.style.transition = "transform 0.6s ease";
-        track.style.transform = `translateX(${-index * slideWidth}px)`;
-      }
-      
-      prev?.addEventListener("click", () => goTo(index - 1));
-      next?.addEventListener("click", () => goTo(index + 1));
-      
-      let resizeTimer;
-      window.addEventListener("resize", () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-          slideWidth = slides[0].getBoundingClientRect().width;
-          track.style.transition = "none";
-          track.style.transform = `translateX(${-index * slideWidth}px)`;
-          setTimeout(() => track.style.transition = "transform 0.6s ease", 50);
-        }, 150);
-      });
-      
-      const autoplay = root.dataset.autoplay === "true";
-      const speed = parseInt(root.dataset.speed || "5", 10) * 1000;
-      let timer;
-      
-      function startAuto() {
-        if (!autoplay) return;
-        stopAuto();
-        timer = setInterval(() => goTo(index + 1), speed);
-      }
-      
-      function stopAuto() {
-        if (timer) clearInterval(timer);
-      }
-      
-      root.addEventListener("mouseenter", stopAuto);
-      root.addEventListener("mouseleave", startAuto);
-      
-      startAuto();
-    }
-    
-    const root = document.getElementById("Slideshow-{{ section.id }}");
-    initSlideshow(root);
-    
-    // Handle theme editor re-renders
-    document.addEventListener('shopify:section:load', function(event) {
-      if (event.detail.sectionId === "{{ section.id }}") {
-        const root = document.getElementById("Slideshow-{{ section.id }}");
-        initSlideshow(root);
-      }
-    });
-  });
-{% endjavascript %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const root = document.getElementById("Slideshow-{{ section.id }}");
+  if (!root) return;
 
+  const track = root.querySelector(".infinite-slideshow__track");
+  const slides = Array.from(track.children);
+  console.log(slides)
+  const prev = root.querySelector(".infinite-slideshow__button--prev");
+  const next = root.querySelector(".infinite-slideshow__button--next");
+
+  let index = 0;
+  let slideWidth = slides[0].getBoundingClientRect().width;
+
+  // 🧠 Function to move slide
+  function goTo(newIndex) {
+    index = (newIndex + slides.length) % slides.length; // Circular logic
+    track.style.transition = "transform 0.6s ease";
+    track.style.transform = `translateX(${-index * slideWidth}px)`;
+  }
+
+  // 🧭 Buttons
+  prev.addEventListener("click", () => goTo(index - 1));
+  next.addEventListener("click", () => goTo(index + 1));
+
+  // 🪄 Re-measure on resize
+  window.addEventListener("resize", () => {
+    slideWidth = slides[0].getBoundingClientRect().width;
+    track.style.transition = "none";
+    track.style.transform = `translateX(${-index * slideWidth}px)`;
+  });
+
+  // ⚙️ Auto-slide logic
+  const autoplay = root.dataset.autoplay === "true";
+  const speed = parseInt(root.dataset.speed || "5", 10) * 1000;
+  let timer;
+
+  function startAuto() {
+    if (!autoplay) return;
+    stopAuto();
+    timer = setInterval(() => goTo(index + 1), speed);
+  }
+
+  function stopAuto() {
+    if (timer) clearInterval(timer);
+  }
+
+  root.addEventListener("mouseenter", stopAuto);
+  root.addEventListener("mouseleave", startAuto);
+
+  startAuto();
+});
+</script>
 
 {% schema %}
 {
