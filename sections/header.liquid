@@ -43,7 +43,7 @@
        /* When drawer is open, keep announcement bar lower */
        .menu-drawer-container[open] ~ * .announcement-bar-section,
        body:has(.menu-drawer-container[open]) .announcement-bar-section {
-         z-index: 1;
+         z-index: 4;
        }
 
        /* Header should be below drawer too */
@@ -54,7 +54,7 @@
 
        .menu-drawer-container[open] ~ .section-header,
        body:has(.menu-drawer-container[open]) .section-header {
-         z-index: 1;
+         z-index: 4;
        }
 
          .menu-drawer__inner-container {
