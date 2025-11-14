@@ -5,6 +5,7 @@ Infinite Slideshow Section — fully working
 - Auto-slide optional
 - Desktop + mobile images
 - Slide cloning for smooth looping
+- Links to collections or product pages
 {% endcomment %}
 
 <style>
@@ -23,6 +24,13 @@ Infinite Slideshow Section — fully working
   .infinite-slideshow__slide {
     flex: 0 0 100%;
     position: relative;
+  }
+
+  .infinite-slideshow__slide-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
   }
 
   .infinite-slideshow__image {
@@ -95,6 +103,10 @@ Infinite Slideshow Section — fully working
   <div class="infinite-slideshow__track" id="Slider-{{ section.id }}">
     {% for block in section.blocks %}
       <div class="infinite-slideshow__slide" id="Slide-{{ section.id }}-{{ forloop.index }}">
+        {% if block.settings.slide_link %}
+          <a href="{{ block.settings.slide_link }}" class="infinite-slideshow__slide-link" aria-label="{{ block.settings.alt_text }}">
+        {% endif %}
+        
         <picture>
           {% if block.settings.image_mobile %}
             <source
@@ -115,6 +127,10 @@ Infinite Slideshow Section — fully working
             {{ 'hero-apparel-1' | placeholder_svg_tag }}
           {% endif %}
         </picture>
+
+        {% if block.settings.slide_link %}
+          </a>
+        {% endif %}
       </div>
     {% endfor %}
   </div>
@@ -184,8 +200,8 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    prev?.addEventListener("click", handlePrev);
-    next?.addEventListener("click", handleNext);
+    prev?.addEventListener("click", handleNext);
+    next?.addEventListener("click", handlePrev);
 
     // Re-measure on resize
     let resizeTimer;
@@ -261,7 +277,8 @@ document.addEventListener("DOMContentLoaded", function () {
       "settings": [
         { "type": "image_picker", "id": "image_desktop", "label": "Desktop image" },
         { "type": "image_picker", "id": "image_mobile", "label": "Mobile image (optional)" },
-        { "type": "text", "id": "alt_text", "label": "Alt text" }
+        { "type": "text", "id": "alt_text", "label": "Alt text" },
+        { "type": "url", "id": "slide_link", "label": "Slide link (collection or product URL)" }
       ]
     }
   ],
