@@ -13,22 +13,17 @@ Infinite Slideshow Section — fully working
     position: relative;
     width: 100%;
     overflow: hidden;
-    contain: layout style paint; /* Isolate from layout recalculations */
   }
 
   .infinite-slideshow__track {
     display: flex;
     transition: transform 0.6s ease;
-    will-change: transform; /* Notify browser of upcoming transform */
-    transform: translateZ(0); /* Enable GPU acceleration */
-    backface-visibility: hidden; /* Prevent flickering on mobile */
-    perspective: 1000px; /* Improve rendering performance */
+    will-change: transform;
   }
 
   .infinite-slideshow__slide {
     flex: 0 0 100%;
     position: relative;
-    flex-shrink: 0; /* Prevent flex from shrinking the slide */
   }
 
   .infinite-slideshow__slide-link {
@@ -43,7 +38,6 @@ Infinite Slideshow Section — fully working
     height: 100%;
     object-fit: cover;
     display: block;
-    backface-visibility: hidden;
   }
 
   /* Arrows */
@@ -56,12 +50,11 @@ Infinite Slideshow Section — fully working
     color: white;
     font-size: 48px;
     cursor: pointer;
-    z-index: 4;
+    z-index: 1;
     padding: 5px 12px;
     user-select: none;
     text-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
     transition: opacity 0.2s ease;
-    will-change: opacity;
   }
 
   .infinite-slideshow__button:hover {
@@ -76,25 +69,13 @@ Infinite Slideshow Section — fully working
     right: 10px;
   }
 
-  /* Hide arrows when drawer is open */
-  body.drawer-open .infinite-slideshow__button,
-  body.menu-open .infinite-slideshow__button {
-    visibility: hidden;
-    pointer-events: none;
-  }
-
   @media (max-width: 749px) {
-    .infinite-slideshow {
-      contain: layout style paint;
-    }
-
     .infinite-slideshow__button {
       font-size: 32px;
       padding: 4px 8px;
     }
   }
 </style>
-
 
 <section
   class="infinite-slideshow"
@@ -180,31 +161,21 @@ document.addEventListener("DOMContentLoaded", function () {
     // Update slides array to include clones
     slides = Array.from(track.children);
     let index = 1; // Start at the first real slide (after lastClone)
-    let slideWidth = 0;
-
-    // Batch read DOM measurements
-    function measureSlideWidth() {
-      slideWidth = slides[0].getBoundingClientRect().width;
-      return slideWidth;
-    }
-
-    measureSlideWidth();
+    let slideWidth = slides[0].getBoundingClientRect().width;
 
     // Set initial position without transition
     track.style.transition = "none";
     track.style.transform = `translateX(${-index * slideWidth}px)`;
 
     function goTo(newIndex, animate = true) {
-      requestAnimationFrame(() => {
-        if (animate) {
-          track.style.transition = "transform 0.6s ease";
-        } else {
-          track.style.transition = "none";
-        }
+      if (animate) {
+        track.style.transition = "transform 0.6s ease";
+      } else {
+        track.style.transition = "none";
+      }
 
-        track.style.transform = `translateX(${-newIndex * slideWidth}px)`;
-        index = newIndex;
-      });
+      track.style.transform = `translateX(${-newIndex * slideWidth}px)`;
+      index = newIndex;
     }
 
     function handleNext() {
@@ -229,17 +200,17 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    prev?.addEventListener("click", handlePrev);
+    prev?.addEventListener("click",handlePrev );
     next?.addEventListener("click", handleNext);
 
-    // Debounced resize handler
+    // Re-measure on resize
     let resizeTimer;
     window.addEventListener("resize", () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
-        const newWidth = measureSlideWidth();
+        slideWidth = slides[0].getBoundingClientRect().width;
         track.style.transition = "none";
-        track.style.transform = `translateX(${-index * newWidth}px)`;
+        track.style.transform = `translateX(${-index * slideWidth}px)`;
       }, 150);
     });
 
