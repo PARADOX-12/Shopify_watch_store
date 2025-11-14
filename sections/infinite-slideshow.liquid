@@ -112,111 +112,73 @@ Infinite Slideshow Section — fully working
     {% endfor %}
   </div>
 </section>
+
 {% javascript %}
-document.addEventListener("DOMContentLoaded", function () {
-  function initSlideshow(root) {
-    if (!root) return;
-    
-    const track = root.querySelector(".infinite-slideshow__track");
-    const slides = Array.from(track.children);
-    if (slides.length === 0) return;
-    
-    const prev = root.querySelector(".infinite-slideshow__button--prev");
-    const next = root.querySelector(".infinite-slideshow__button--next");
-    
-    // Clone first and last slides for infinite effect
-    const firstClone = slides[0].cloneNode(true);
-    const lastClone = slides[slides.length - 1].cloneNode(true);
-    
-    track.appendChild(firstClone);
-    track.insertBefore(lastClone, slides[0]);
-    
-    // Update slides array to include clones
-    const allSlides = Array.from(track.children);
-    let index = 1; // Start at the first real slide (after lastClone)
-    let slideWidth = allSlides[0].getBoundingClientRect().width;
-    
-    // Set initial position
-    track.style.transform = `translateX(${-index * slideWidth}px)`;
-    
-    function goTo(newIndex, animate = true) {
-      if (animate) {
+  document.addEventListener("DOMContentLoaded", function () {
+    function initSlideshow(root) {
+      if (!root) return;
+      
+      const track = root.querySelector(".infinite-slideshow__track");
+      const slides = Array.from(track.children);
+      if (slides.length === 0) return;
+      
+      const prev = root.querySelector(".infinite-slideshow__button--prev");
+      const next = root.querySelector(".infinite-slideshow__button--next");
+      
+      let index = 0;
+      let slideWidth = slides[0].getBoundingClientRect().width;
+      
+      function goTo(newIndex) {
+        index = (newIndex + slides.length) % slides.length;
         track.style.transition = "transform 0.6s ease";
-      } else {
-        track.style.transition = "none";
+        track.style.transform = `translateX(${-index * slideWidth}px)`;
       }
       
-      track.style.transform = `translateX(${-newIndex * slideWidth}px)`;
-      index = newIndex;
-    }
-    
-    function handleNext() {
-      goTo(index + 1);
+      prev?.addEventListener("click", () => goTo(index - 1));
+      next?.addEventListener("click", () => goTo(index + 1));
       
-      // If we reached the cloned first slide, snap back to real first slide
-      if (index === allSlides.length - 1) {
-        setTimeout(() => {
-          goTo(1, false); // Jump without animation
-        }, 600); // Match transition duration
-      }
-    }
-    
-    function handlePrev() {
-      goTo(index - 1);
+      let resizeTimer;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          slideWidth = slides[0].getBoundingClientRect().width;
+          track.style.transition = "none";
+          track.style.transform = `translateX(${-index * slideWidth}px)`;
+          setTimeout(() => track.style.transition = "transform 0.6s ease", 50);
+        }, 150);
+      });
       
-      // If we reached the cloned last slide, snap back to real last slide
-      if (index === 0) {
-        setTimeout(() => {
-          goTo(allSlides.length - 2, false); // Jump without animation
-        }, 600); // Match transition duration
+      const autoplay = root.dataset.autoplay === "true";
+      const speed = parseInt(root.dataset.speed || "5", 10) * 1000;
+      let timer;
+      
+      function startAuto() {
+        if (!autoplay) return;
+        stopAuto();
+        timer = setInterval(() => goTo(index + 1), speed);
       }
+      
+      function stopAuto() {
+        if (timer) clearInterval(timer);
+      }
+      
+      root.addEventListener("mouseenter", stopAuto);
+      root.addEventListener("mouseleave", startAuto);
+      
+      startAuto();
     }
     
-    next?.addEventListener("click", handleNext);
-    prev?.addEventListener("click", handlePrev);
+    const root = document.getElementById("Slideshow-{{ section.id }}");
+    initSlideshow(root);
     
-    // Re-measure on resize
-    let resizeTimer;
-    window.addEventListener("resize", () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        slideWidth = allSlides[0].getBoundingClientRect().width;
-        goTo(index, false);
-      }, 150);
+    // Handle theme editor re-renders
+    document.addEventListener('shopify:section:load', function(event) {
+      if (event.detail.sectionId === "{{ section.id }}") {
+        const root = document.getElementById("Slideshow-{{ section.id }}");
+        initSlideshow(root);
+      }
     });
-    
-    // Auto-slide logic
-    const autoplay = root.dataset.autoplay === "true";
-    const speed = parseInt(root.dataset.speed || "5", 10) * 1000;
-    let timer;
-    
-    function startAuto() {
-      if (!autoplay) return;
-      stopAuto();
-      timer = setInterval(handleNext, speed);
-    }
-    
-    function stopAuto() {
-      if (timer) clearInterval(timer);
-    }
-    
-    root.addEventListener("mouseenter", stopAuto);
-    root.addEventListener("mouseleave", startAuto);
-    
-    startAuto();
-  }
-  
-  const root = document.getElementById("Slideshow-{{ section.id }}");
-  initSlideshow(root);
-  
-  // Handle theme editor re-renders
-  document.addEventListener('shopify:section:load', function(event) {
-    if (event.detail.sectionId === "{{ section.id }}") {
-      const root = document.getElementById("Slideshow-{{ section.id }}");
-      initSlideshow(root);
-    }
   });
-});
 {% endjavascript %}
 
 
