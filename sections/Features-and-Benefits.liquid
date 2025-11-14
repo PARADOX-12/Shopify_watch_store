@@ -1,9 +1,9 @@
 {% comment %}
-  Icons Row Section - Responsive
-  - Black background with white icons and text
-  - Centered both horizontally and vertically
-  - Fully responsive for mobile and desktop
-  - Customizable blocks with icon color options
+Features & Benefits Section - Responsive
+- Black background with white icons and text
+- Centered both horizontally and vertically
+- Fully responsive for mobile and desktop
+- SVG icons via HTML input or image upload
 {% endcomment %}
 
 <style>
@@ -46,6 +46,13 @@
     width: 100%;
     height: 100%;
     fill: white;
+    display: block;
+  }
+
+  .icons-row__icon-image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
   }
 
   .icons-row__content {
@@ -71,6 +78,11 @@
       width: 60px;
       height: 60px;
       margin-bottom: 10px;
+    }
+
+    .icons-row__icon-image {
+      width: 60px;
+      height: 60px;
     }
 
     .icons-row__content {
@@ -99,23 +111,19 @@
     <div class="icons-row__wrapper">
       {% for block in section.blocks %}
         <div class="icons-row__item" {{ block.shopify_attributes }}>
-          {% if block.settings.icon_type == 'svg' %}
-            <div class="icons-row__icon-wrapper">
-              {% if block.settings.custom_svg %}
-                {{ block.settings.custom_svg }}
+          <div class="icons-row__icon-wrapper">
+            {% if block.settings.icon_type == 'svg' %}
+              {% if block.settings.custom_svg != blank %}
+                <div class="icons-row__icon">
+                  {{ block.settings.custom_svg }}
+                </div>
               {% endif %}
-            </div>
-          {% elsif block.settings.icon_type == 'image' %}
-            <div class="icons-row__icon-wrapper">
+            {% elsif block.settings.icon_type == 'image' %}
               {% if block.settings.icon_image %}
-                {{
-                  block.settings.icon_image
-                  | image_url: width: 100
-                  | image_tag: class: 'icons-row__icon', alt: block.settings.icon_image.alt
-                }}
+                {{ block.settings.icon_image | image_url: width: 100 | image_tag: class: 'icons-row__icon-image', alt: block.settings.icon_image.alt }}
               {% endif %}
-            </div>
-          {% endif %}
+            {% endif %}
+          </div>
 
           {% if block.settings.content %}
             <p class="icons-row__content">
@@ -130,7 +138,7 @@
 
 {% schema %}
 {
-  "name": "Icons Row",
+  "name": "Features & Benefits",
   "tag": "section",
   "class": "section",
   "settings": [
@@ -151,20 +159,20 @@
           "id": "icon_type",
           "label": "Icon type",
           "options": [
-            { "value": "svg", "label": "SVG Code" },
-            { "value": "image", "label": "Upload Image" }
+            { "value": "image", "label": "Upload Image" },
+            { "value": "svg", "label": "SVG Code" }
           ],
           "default": "image"
         },
         {
           "type": "image_picker",
           "id": "icon_image",
-          "label": "Icon image (if using image type)"
+          "label": "Icon image (PNG/JPG)"
         },
         {
-          "type": "textarea",
+          "type": "html",
           "id": "custom_svg",
-          "label": "SVG code (if using SVG type)"
+          "label": "SVG code (paste full <svg> tag)"
         },
         {
           "type": "text",
@@ -200,7 +208,7 @@
         {
           "type": "icon_item",
           "settings": {
-            "content": "10% off on 1st purchase - WELCOME10"
+            "content": "10% off on 1st purchase"
           }
         },
         {
