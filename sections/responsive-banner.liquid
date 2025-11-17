@@ -1,8 +1,12 @@
 <style>
+
+  .spacer{
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
   #responsive-banner-{{ section.id }} .banner-image {
     width: 100%;
     height: auto;
-    display: block;
   }
 
   .desktop-banner { display: block; }
@@ -47,6 +51,8 @@
   }
 </style>
 
+
+<div class="spacer">
 <section id="responsive-banner-{{ section.id }}" class="responsive-banner">
   <div class="responsive-banner-wrapper">
     {% if section.settings.desktop_image %}
@@ -78,6 +84,7 @@
     {% endif %}
   </div>
 </section>
+</div>
 
 {% schema %}
 {
@@ -97,7 +104,7 @@
       "type": "text",
       "id": "heading",
       "label": "Heading Text",
-      "default": "No Text"
+      "default": "Your Banner Heading"
     },
     {
       "type": "select",
