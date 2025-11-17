@@ -51,6 +51,16 @@
         "change_slides_speed": 3
       }
     },
+    "responsive_banner_4rLiwJ": {
+      "type": "responsive-banner",
+      "name": "Responsive Fullwidth Banner",
+      "settings": {
+        "desktop_image": "shopify://shop_images/1920x250_Exclusive_Banner.webp",
+        "mobile_image": "shopify://shop_images/1920x250_Exclusive_Banner_1.webp",
+        "heading": "No Text",
+        "text_position": "center"
+      }
+    },
     "features_and_benefits_jkd6me": {
       "type": "Features-and-Benefits",
       "blocks": {
@@ -111,6 +121,7 @@
   },
   "order": [
     "infinite_slideshow_an7nD8",
+    "responsive_banner_4rLiwJ",
     "features_and_benefits_jkd6me"
   ]
 }
