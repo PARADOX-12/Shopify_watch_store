@@ -3747,3 +3747,8 @@ details-disclosure > details {
 .slideshow-container {
   min-height: 300px; /* optional */
 }
+
+#shopify-section-sections--19626444718269__announcement-bar {
+  position: sticky !important;
+  top: 0;
+}
