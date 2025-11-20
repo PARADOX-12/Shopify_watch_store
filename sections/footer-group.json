@@ -13,6 +13,19 @@
   "sections": {
     "footer": {
       "type": "footer",
+      "blocks": {
+        "image_Gir8WU": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/idS3BwNSH5_logos.png",
+            "image_width": 175,
+            "alignment": ""
+          }
+        }
+      },
+      "block_order": [
+        "image_Gir8WU"
+      ],
       "settings": {
         "color_scheme": "scheme-1",
         "newsletter_enable": true,

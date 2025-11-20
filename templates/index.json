@@ -9,16 +9,6 @@
  */
 {
   "sections": {
-    "responsive_banner_4rLiwJ": {
-      "type": "responsive-banner",
-      "name": "Responsive Fullwidth Banner",
-      "settings": {
-        "desktop_image": "shopify://shop_images/1920x250_Exclusive_Banner.webp",
-        "mobile_image": "shopify://shop_images/1920x250_Exclusive_Banner_1.webp",
-        "heading": "",
-        "text_position": "center"
-      }
-    },
     "infinite_slideshow_an7nD8": {
       "type": "infinite-slideshow",
       "blocks": {
@@ -117,11 +107,70 @@
       "settings": {
         "background_color": "#000000"
       }
+    },
+    "responsive_banner_4rLiwJ": {
+      "type": "responsive-banner",
+      "name": "Responsive Fullwidth Banner",
+      "settings": {
+        "desktop_image": "shopify://shop_images/1920x250_Exclusive_Banner.webp",
+        "mobile_image": "shopify://shop_images/1920x250_Exclusive_Banner_1.webp",
+        "heading": "",
+        "text_position": "center"
+      }
+    },
+    "collection_list_VeMRxF": {
+      "type": "collection-list",
+      "blocks": {
+        "featured_collection_tLAwfk": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": ""
+          }
+        },
+        "featured_collection_jA8M8V": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": ""
+          }
+        },
+        "featured_collection_XcwYkx": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": ""
+          }
+        },
+        "featured_collection_bgdd7r": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": ""
+          }
+        }
+      },
+      "block_order": [
+        "featured_collection_tLAwfk",
+        "featured_collection_jA8M8V",
+        "featured_collection_XcwYkx",
+        "featured_collection_bgdd7r"
+      ],
+      "name": "t:sections.collection-list.presets.name",
+      "settings": {
+        "title": "",
+        "heading_size": "h1",
+        "image_ratio": "adapt",
+        "columns_desktop": 3,
+        "color_scheme": "",
+        "show_view_all": true,
+        "columns_mobile": "1",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
     }
   },
   "order": [
     "infinite_slideshow_an7nD8",
     "features_and_benefits_jkd6me",
-    "responsive_banner_4rLiwJ"
+    "responsive_banner_4rLiwJ",
+    "collection_list_VeMRxF"
   ]
 }
